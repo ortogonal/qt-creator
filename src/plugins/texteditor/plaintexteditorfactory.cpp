@@ -12,6 +12,7 @@
 #include "textindenter.h"
 
 #include <coreplugin/coreconstants.h>
+#include <coreplugin/editormanager/ieditorfactory.h>
 #include <utils/infobar.h>
 #include <utils/qtcassert.h>
 

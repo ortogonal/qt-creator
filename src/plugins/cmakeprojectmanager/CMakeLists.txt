@@ -5,12 +5,14 @@ add_qtc_plugin(CMakeProjectManager
   SOURCES
     builddirparameters.cpp builddirparameters.h
     cmake_global.h
+    cmakeadddialog.cpp cmakeadddialog.h cmakeadddialog.ui
     cmakeautocompleter.cpp cmakeautocompleter.h
     cmakebuildconfiguration.cpp cmakebuildconfiguration.h
     cmakebuildsystem.cpp cmakebuildsystem.h
     cmakebuildstep.cpp cmakebuildstep.h
     cmakebuildtarget.h
     cmakeconfigitem.cpp cmakeconfigitem.h
+    cmakedocument.cpp cmakedocument.h
     cmakeeditor.cpp cmakeeditor.h
     cmakefilecompletionassist.cpp cmakefilecompletionassist.h
     cmakeindenter.cpp cmakeindenter.h
@@ -38,4 +40,5 @@ add_qtc_plugin(CMakeProjectManager
     presetsparser.cpp presetsparser.h
     presetsmacros.cpp presetsmacros.h
     projecttreehelper.cpp projecttreehelper.h
+    lexer/cmListFileLexer.c lexer/cmListFileLexer.h
 )

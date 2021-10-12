@@ -4,9 +4,11 @@
 #include "cmakebuildsystem.h"
 
 #include "builddirparameters.h"
+#include "cmakeadddialog.h"
 #include "cmakebuildconfiguration.h"
 #include "cmakebuildstep.h"
 #include "cmakebuildtarget.h"
+#include "cmakedocument.h"
 #include "cmakekitinformation.h"
 #include "cmakeproject.h"
 #include "cmakeprojectconstants.h"
@@ -121,6 +123,7 @@ static void noAutoAdditionNotify(const FilePaths &filePaths, const ProjectNode *
         }
 
         case NeverCopyFilePath:
+        case AutoModification:
             break;
         }
     }
@@ -266,7 +269,7 @@ void CMakeBuildSystem::triggerParsing()
 bool CMakeBuildSystem::supportsAction(Node *context, ProjectAction action, const Node *node) const
 {
     if (dynamic_cast<CMakeTargetNode *>(context))
-        return action == ProjectAction::AddNewFile;
+        return action == ProjectAction::AddNewFile || action == ProjectAction::Rename || action == ProjectAction::RemoveFile;
 
     if (dynamic_cast<CMakeListsNode *>(context))
         return action == ProjectAction::AddNewFile;
@@ -282,7 +285,34 @@ bool CMakeBuildSystem::addFiles(Node *context, const FilePaths &filePaths, FileP
     }
 
     if (auto n = dynamic_cast<CMakeTargetNode *>(context)) {
-        noAutoAdditionNotify(filePaths, n);
+        CMakeProjectManager::Internal::CMakeSpecificSettings *settings
+            = CMakeProjectManager::Internal::CMakeProjectPlugin::projectTypeSpecificSettings();
+        auto actionAfterAdd = CMakeProjectManager::Internal::AutoModification;//settings->afterAddFileSetting();
+
+        if (actionAfterAdd == CMakeProjectManager::Internal::AutoModification) {
+            qDebug() << Q_FUNC_INFO << "Time to modify" << filePaths << n->showProjectFileAfterAddFileAction();
+
+            auto doc = std::make_shared<CMakeDocument>(projectFilePath().toString());
+            if (doc->valid()) {
+                if (!doc->uniqueSourceLocation()) {
+                    CMakeAddDialog addDialog(doc);
+                    addDialog.setWindowFlag(Qt::Tool);
+                    addDialog.exec();
+                    qDebug() << Q_FUNC_INFO << "after exec!";
+                } else {
+                    qDebug() << Q_FUNC_INFO << "no unique location";
+                }
+
+                //n->setShowProjectFileAfterAddFileAction(!result);
+                //bool result = doc->addSource(filePaths);
+                //n->setShowProjectFileAfterAddFileAction(!result);
+
+            } else {
+                qDebug() << Q_FUNC_INFO << "Doc not valid";
+            }
+        } else {
+            noAutoAdditionNotify(filePaths, n);
+        }
         return true; // Return always true as autoadd is not supported!
     }
 

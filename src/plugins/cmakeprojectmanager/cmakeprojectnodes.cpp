@@ -44,6 +44,7 @@ bool CMakeListsNode::showInSimpleTree() const
 
 std::optional<FilePath> CMakeListsNode::visibleAfterAddFileAction() const
 {
+    qDebug() << Q_FUNC_INFO;
     return filePath().pathAppended("CMakeLists.txt");
 }
 
@@ -172,9 +173,23 @@ void CMakeTargetNode::setConfig(const CMakeConfig &config)
     m_config = config;
 }
 
+bool CMakeTargetNode::showProjectFileAfterAddFileAction() const
+{
+    return m_showProjectFileAfterAddFileAction;
+}
+
+void CMakeTargetNode::setShowProjectFileAfterAddFileAction(const bool show)
+{
+    m_showProjectFileAfterAddFileAction = show;
+}
+
 std::optional<FilePath> CMakeTargetNode::visibleAfterAddFileAction() const
 {
-    return filePath().pathAppended("CMakeLists.txt");
+    qDebug() << Q_FUNC_INFO;
+    if (m_showProjectFileAfterAddFileAction)
+        return filePath().pathAppended("CMakeLists.txt");
+
+    return {};
 }
 
 void CMakeTargetNode::build()
