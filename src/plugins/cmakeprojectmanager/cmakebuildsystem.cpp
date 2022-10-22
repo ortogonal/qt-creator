@@ -319,6 +319,44 @@ bool CMakeBuildSystem::addFiles(Node *context, const FilePaths &filePaths, FileP
     return BuildSystem::addFiles(context, filePaths, notAdded);
 }
 
+RemovedFilesFromProject CMakeBuildSystem::removeFiles(Node *context, const FilePaths &filePaths, FilePaths *notRemoved)
+{
+    qDebug() << Q_FUNC_INFO
+             << context->isFolderNodeType()
+             << context->isProjectNodeType()
+             << context->isVirtualFolderType()
+             << filePaths;
+    if (auto n = dynamic_cast<CMakeTargetNode *>(context)) {
+        qDebug() << Q_FUNC_INFO << n->buildKey() << n->tooltip() << n->buildDirectory() << n->filePath();
+
+        auto parentProjectNode = n->parentProjectNode();
+        if (parentProjectNode) {
+            auto cMakeProjectParentNode = dynamic_cast<CMakeProjectNode*>(parentProjectNode);
+            if (cMakeProjectParentNode) {
+                qDebug() << Q_FUNC_INFO << "ProjectParent" << cMakeProjectParentNode->tooltip() << cMakeProjectParentNode->filePath();
+            }
+
+            if (auto cListNode = dynamic_cast<CMakeListsNode*>(parentProjectNode->parentProjectNode())) {
+                qDebug() << Q_FUNC_INFO << "list node" << cListNode->displayName();
+            }
+        }
+
+        auto parentFolderNode = n->parentFolderNode();
+        if (parentFolderNode) {
+            if (auto cMakeFolderNode = dynamic_cast<CMakeTargetNode*>(parentFolderNode)) {
+                qDebug() << Q_FUNC_INFO << "hmm";
+            }
+        }
+    }
+    return BuildSystem::removeFiles(context, filePaths, notRemoved);
+}
+
+bool CMakeBuildSystem::deleteFiles(Node *context, const FilePaths &filePaths)
+{
+    qDebug() << Q_FUNC_INFO << context << filePaths;
+    return BuildSystem::deleteFiles(context, filePaths);
+}
+
 FilePaths CMakeBuildSystem::filesGeneratedFrom(const FilePath &sourceFile) const
 {
     FilePath project = projectDirectory();

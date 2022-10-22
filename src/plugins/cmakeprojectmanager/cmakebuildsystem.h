@@ -9,6 +9,7 @@
 
 #include <projectexplorer/buildconfiguration.h>
 #include <projectexplorer/buildsystem.h>
+#include <projectexplorer/projectnodes.h>
 
 #include <utils/fileutils.h>
 #include <utils/futuresynchronizer.h>
@@ -47,6 +48,11 @@ public:
 
     bool addFiles(ProjectExplorer::Node *context,
                   const Utils::FilePaths &filePaths, Utils::FilePaths *) final;
+
+    ProjectExplorer::RemovedFilesFromProject removeFiles(ProjectExplorer::Node *context,
+                                                         const Utils::FilePaths &filePaths,
+                                                         Utils::FilePaths *notRemoved) override;
+    bool deleteFiles(ProjectExplorer::Node *context, const Utils::FilePaths &filePaths) override;
 
     Utils::FilePaths filesGeneratedFrom(const Utils::FilePath &sourceFile) const final;
     QString name() const final { return QLatin1String("cmake"); }
